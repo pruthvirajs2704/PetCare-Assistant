@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Dashboard — Pet Care</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #f5f8fb;
+      --card: #ffffff;
+      --accent: #2b8cc4;
+      --accent-2: #07b1a3;
+      --muted: #6b7280;
+      --danger: #d9534f;
+      --radius: 12px;
+      --shadow: 0 8px 24px rgba(16,24,40,0.06);
+      --max-width: 1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);font-family:Poppins,system-ui,Segoe UI,Roboto,Arial;color:#14202b}
+    a{color:inherit}
+    header{max-width:var(--max-width);margin:18px auto 0 auto;padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#042426}
+    h1{margin:0;font-size:18px}
+    .top-actions{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);color:white;border:0;padding:9px 12px;border-radius:10px;cursor:pointer;font-weight:700;display:inline-flex;gap:8px;align-items:center}
+    .btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06);color:var(--muted);font-weight:600}
+    .btn.danger{background:transparent;border:1px solid rgba(217,83,79,0.12);color:var(--danger)}
+
+    .container{max-width:var(--max-width);margin:16px auto;padding:0 18px 60px;display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:start}
+    @media (max-width:980px){ .container{grid-template-columns:1fr;padding:0 14px} header{padding:10px 14px} }
+
+    /* Sidebar */
+    .sidebar{background:var(--card);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.03);position:sticky;top:18px}
+    .sidebar h2{margin:0;font-size:15px}
+    .nav{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+    .nav button{padding:10px;border-radius:8px;border:0;background:transparent;text-align:left;cursor:pointer;color:var(--muted);font-weight:600;transition:all .12s ease}
+    .nav button:hover{transform:translateX(6px);color:var(--accent)}
+    .nav button.active{background:linear-gradient(90deg, rgba(43,140,196,0.08), rgba(7,177,163,0.02));color:var(--accent);transform:translateX(6px)}
+    .sidebar .info{margin-top:14px;color:var(--muted);font-size:13px}
+
+    /* Main content */
+    .panel{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.02)}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .muted{color:var(--muted);font-size:13px}
+    .controls{display:flex;gap:8px;align-items:center}
+
+    /* Table */
+    .table-wrap{margin-top:12px;overflow:auto;border-radius:10px;border:1px solid rgba(0,0,0,0.03)}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    thead th{padding:12px 14px;text-align:left;color:var(--muted);font-weight:700;background:linear-gradient(180deg, rgba(0,0,0,0.01), transparent)}
+    tbody td{padding:12px 14px;border-top:1px solid rgba(0,0,0,0.03);vertical-align:middle}
+    tbody tr:hover td{background:linear-gradient(90deg, rgba(43,140,196,0.02), rgba(7,177,163,0.01))}
+
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(43,140,196,0.08);color:var(--accent);font-weight:700}
+    input[type="text"], input[type="search"], textarea, select{padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);outline:none;font-size:14px}
+    input:focus, textarea:focus{box-shadow:0 8px 18px rgba(43,140,196,0.06);border-color:var(--accent)}
+
+    .form-grid{display:grid;grid-template-columns:1fr 170px;gap:12px;align-items:start;margin-top:12px}
+    @media (max-width:720px){ .form-grid{grid-template-columns:1fr} }
+
+    .icon-btn{background:transparent;border:0;padding:6px;border-radius:6px;cursor:pointer}
+    .empty{padding:18px;text-align:center;color:var(--muted)}
+
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(6,8,16,0.46);display:flex;align-items:center;justify-content:center;z-index:80;opacity:0;pointer-events:none;transition:opacity .12s ease}
+    .modal-backdrop.show{opacity:1;pointer-events:auto}
+    .modal{width:min(720px,96%);background:var(--card);border-radius:12px;padding:18px;box-shadow:0 16px 40px rgba(0,0,0,0.2);border:1px solid rgba(0,0,0,0.06)}
+    .modal h3{margin:0 0 10px 0}
+
+    footer{max-width:var(--max-width);margin:28px auto;text-align:center;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+
+  <!--
+    Admin Dashboard
+    - Reads users from localStorage.KEY 'registeredUsers' (array of objects)
+    - Register.html should add user objects to localStorage.registeredUsers
+      Example (in Register.html after successful registration):
+        const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+        users.push({ name: 'Priya', email: 'p@example.com', id: 'U001', createdAt: new Date().toISOString() });
+        localStorage.setItem('registeredUsers', JSON.stringify(users));
+  -->
+
+  <header>
+    <div class="brand">
+      <div class="logo">PC</div>
+      <div>
+        <h1>Pet Care — Admin</h1>
+        <div class="muted" style="margin-top:4px">Manage registered users & services</div>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button class="btn ghost" onclick="location.href='Home.html'">🏠 Home</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Left sidebar -->
+    <aside class="sidebar" aria-label="Main navigation">
+      <h2>Admin Menu</h2>
+
+      <nav class="nav" aria-label="Primary">
+        <button id="nav-dashboard" class="active" onclick="switchView('dashboard')">📊 Dashboard</button>
+        <button id="nav-nutrition" onclick="switchView('nutrition')">🥗 Nutrition</button>
+        <button id="nav-grooming" onclick="switchView('grooming')">✂️ Grooming</button>
+      </nav>
+
+      <div class="info muted" style="margin-top:14px">
+        <div><strong>Quick info</strong></div>
+        <div style="margin-top:8px">This page reads registration details saved by your registration page in <code>registeredUsers</code>.</div>
+      </div>
+    </aside>
+
+    <!-- Right main -->
+    <section style="min-height:420px">
+      <!-- Dashboard view -->
+      <div id="view-dashboard" class="panel">
+        <div class="toolbar">
+          <div>
+            <h2>Registered Users</h2>
+            <div class="muted">Loaded from <code>localStorage.registeredUsers</code></div>
+          </div>
+
+          <div class="controls">
+            <input id="searchUser" type="search" placeholder="Search name or email" />
+            <button id="btnExport" class="btn">Export CSV</button>
+            <button id="btnRefresh" class="btn ghost">🔄 Refresh</button>
+            <button id="btnClearAll" class="btn danger">Clear All</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+          <div class="pill" id="usersCount">0</div>
+          <div class="muted">users</div>
+          <div class="muted" id="lastLoaded" style="margin-left:auto"></div>
+        </div>
+
+        <div class="table-wrap" style="margin-top:12px">
+          <table id="usersTable">
+            <thead>
+              <tr>
+                <th style="width:34%">Name / ID</th>
+                <th style="width:30%">Email</th>
+                <th style="width:20%">Added</th>
+                <th style="width:16%">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody">
+              <tr><td colspan="4" class="empty">No users found — register a user from Register.html</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Nutrition view -->
+      <div id="view-nutrition" class="panel" style="display:none">
+        <div class="toolbar">
+          <div>
+            <h2>Nutrition Services</h2>
+            <div class="muted">Add / view nutrition services (localStorage: <code>nutritionServices</code>).</div>
+          </div>
+          <div class="muted" id="nutCount">0 items</div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <input id="nutritionTitle" type="text" placeholder="Title" />
+            <textarea id="nutritionPoints" placeholder="Comma-separated points (e.g. balanced,consultation)"></textarea>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button id="btnAddNutrition" class="btn">Add</button>
+            <button id="btnViewNutrition" class="btn ghost">View</button>
+            <button id="btnClearNutrition" class="btn danger">Clear</button>
+          </div>
+        </div>
+
+        <div id="nutritionList" style="margin-top:12px"></div>
+      </div>
+
+      <!-- Grooming view -->
+      <div id="view-grooming" class="panel" style="display:none">
+        <div class="toolbar">
+          <div>
+            <h2>Grooming Services</h2>
+            <div class="muted">Add / view grooming services (localStorage: <code>groomingServices</code>).</div>
+          </div>
+          <div class="muted" id="groomCount">0 items</div>
+        </div>
+
+        <div class="form-grid">
+          <div>
+            <input id="groomTitle" type="text" placeholder="Title" />
+            <textarea id="groomPoints" placeholder="Comma-separated points (e.g. bath,trim,nails)"></textarea>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button id="btnAddGroom" class="btn">Add</button>
+            <button id="btnViewGroom" class="btn ghost">View</button>
+            <button id="btnClearGroom" class="btn danger">Clear</button>
+          </div>
+        </div>
+
+        <div id="groomList" style="margin-top:12px"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal for user details -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true" style="display:none">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">User details</h3>
+      <div id="modalBody"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        <button id="modalRemove" class="btn danger">Remove</button>
+        <button id="modalClose" class="btn ghost">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>Pet Care Admin • localStorage driven</footer>
+
+  <script>
+    /* Keys used:
+       - registeredUsers : array of user objects saved by Register.html
+       - nutritionServices : array of {title, points[], createdAt}
+       - groomingServices : array of {title, points[], createdAt}
+    */
+
+    const USER_KEY = 'registeredUsers';
+    const NUT_KEY = 'nutritionServices';
+    const GROOM_KEY = 'groomingServices';
+
+    const $ = id => document.getElementById(id);
+
+    function read(key){
+      try{
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : [];
+      }catch(e){
+        return [];
+      }
+    }
+    function write(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
+    function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function fmtDate(iso){ if(!iso) return '—'; try{ return new Date(iso).toLocaleString(); }catch(e){ return iso; } }
+
+    // NAV
+    function switchView(name){
+      ['dashboard','nutrition','grooming'].forEach(n=>{
+        const el = $('view-' + n);
+        if(el) el.style.display = (n === name ? 'block' : 'none');
+        const btn = $('nav-' + n);
+        if(btn) btn.classList.toggle('active', n === name);
+      });
+      if(name === 'dashboard') renderUsers($('searchUser')?.value || '');
+      if(name === 'nutrition') renderServices(NUT_KEY, 'nutritionList', 'nutCount');
+      if(name === 'grooming') renderServices(GROOM_KEY, 'groomList', 'groomCount');
+    }
+    window.switchView = switchView;
+
+    // USERS
+    function renderUsers(filter=''){
+      const users = read(USER_KEY) || [];
+      const tbody = $('usersTbody');
+      tbody.innerHTML = '';
+      let list = users;
+      if(filter){
+        const q = filter.toLowerCase();
+        list = users.filter(u =>
+          (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q)
+        );
+      }
+      if(!list.length){
+        tbody.innerHTML = '<tr><td colspan="4" class="empty">No users found.</td></tr>';
+        $('usersCount').textContent = '0';
+        $('lastLoaded').textContent = '';
+        $('usersCount').textContent = '0';
+        $('totalUsers') && ($('totalUsers').textContent = '0 users');
+        return;
+      }
+      list.forEach((u, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${esc(u.name||u.fullName||'')}</strong><div class="muted" style="margin-top:6px">ID: ${esc(u.id||u.userId||'')}</div></td>
+          <td>${esc(u.email||u.mail||'')}</td>
+          <td class="muted">${fmtDate(u.createdAt)}</td>
+          <td>
+            <button class="icon-btn" onclick="openModal(${idx})" title="View">🔍</button>
+            <button class="icon-btn" onclick="removeUser(${idx})" title="Remove">🗑️</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+      $('usersCount').textContent = String(list.length);
+      $('lastLoaded').textContent = 'Updated: ' + new Date().toLocaleString();
+      $('totalUsers') && ($('totalUsers').textContent = list.length + (list.length===1? ' user':' users'));
+    }
+
+    // modal
+    let modalIndex = null;
+    function openModal(i){
+      const users = read(USER_KEY);
+      const u = users[i];
+      if(!u) return alert('User not found');
+      modalIndex = i;
+      const body = $('modalBody');
+      let html = `<div><strong>Name:</strong> ${esc(u.name||u.fullName||'')}</div>
+                  <div style="margin-top:8px"><strong>Email:</strong> ${esc(u.email||u.mail||'')}</div>
+                  <div style="margin-top:8px"><strong>ID:</strong> ${esc(u.id||u.userId||'')}</div>
+                  <div style="margin-top:8px"><strong>Added:</strong> ${fmtDate(u.createdAt)}</div>`;
+      // show other fields if present
+      const extras = Object.keys(u).filter(k=>!['name','fullName','email','mail','id','userId','createdAt'].includes(k));
+      if(extras.length){
+        html += '<div style="margin-top:10px"><strong>Other</strong>';
+        extras.forEach(k=>{
+          html += `<div style="margin-top:6px">${esc(k)}: ${esc(String(u[k]||''))}</div>`;
+        });
+        html += '</div>';
+      }
+      body.innerHTML = html;
+      const backdrop = $('modalBackdrop');
+      backdrop.style.display = 'flex';
+      setTimeout(()=>backdrop.classList.add('show'), 10);
+    }
+    function closeModal(){
+      const backdrop = $('modalBackdrop');
+      backdrop.classList.remove('show');
+      setTimeout(()=>backdrop.style.display='none', 160);
+      modalIndex = null;
+    }
+    function removeFromModal(){
+      if(modalIndex==null) return;
+      if(!confirm('Remove this user?')) return;
+      removeUser(modalIndex);
+      closeModal();
+    }
+
+    function removeUser(idx){
+      const arr = read(USER_KEY);
+      if(!arr[idx]) return;
+      if(!confirm('Remove this user?')) return;
+      arr.splice(idx,1);
+      write(USER_KEY, arr);
+      renderUsers($('searchUser')?.value || '');
+    }
+    function clearAllUsers(){
+      if(!confirm('Clear all users?')) return;
+      localStorage.removeItem(USER_KEY);
+      renderUsers();
+    }
+
+    // CSV export
+    function exportCSV(){
+      const users = read(USER_KEY);
+      if(!users.length){ alert('No users to export'); return; }
+      // collect headers from all keys
+      const keys = Array.from(users.reduce((acc,u)=>{ Object.keys(u).forEach(k=>acc.add(k)); return acc; }, new Set()));
+      const rows = users.map(u => keys.map(k => {
+        const v = u[k] == null ? '' : String(u[k]);
+        return `"${v.replace(/"/g,'""')}"`;
+      }).join(','));
+      const csv = [keys.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'registeredUsers.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    // SERVICES (nutrition/grooming)
+    function renderServices(key, containerId, countId){
+      const arr = read(key);
+      const container = $(containerId);
+      container.innerHTML = '';
+      if(!arr.length){ container.innerHTML = '<div class="muted">No items</div>'; $(countId).textContent='0'; return; }
+      arr.forEach((s,i)=>{
+        const div = document.createElement('div');
+        div.style.padding='10px'; div.style.borderBottom='1px solid rgba(0,0,0,0.04)';
+        div.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:600">${esc(s.title)}</div>
+            <div class="muted" style="margin-top:6px">${esc((s.points||[]).join(', '))}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="muted">${fmtDate(s.createdAt)}</div>
+            <button class="icon-btn" onclick="removeService('${key}', ${i})">🗑️</button>
+          </div>
+        </div>`;
+        container.appendChild(div);
+      });
+      $(countId).textContent = String(arr.length);
+    }
+    function addService(key, titleId, pointsId, listId, countId){
+      const title = $(titleId).value.trim();
+      const pts = $(pointsId).value.split(',').map(p=>p.trim()).filter(Boolean);
+      if(!title || !pts.length){ alert('Enter title and at least one point'); return; }
+      const arr = read(key); arr.unshift({ title, points: pts, createdAt: new Date().toISOString() }); write(key, arr);
+      $(titleId).value=''; $(pointsId).value=''; renderServices(key, listId, countId);
+    }
+    function removeService(key, idx){
+      const arr = read(key); if(!arr[idx]) return; if(!confirm('Remove this item?')) return; arr.splice(idx,1); write(key,arr);
+      if(key===NUT_KEY) renderServices(key,'nutritionList','nutCount'); else renderServices(key,'groomList','groomCount');
+    }
+    function clearServices(key, listId, countId){ if(!confirm('Clear all items?')) return; localStorage.removeItem(key); renderServices(key, listId, countId); }
+
+    // init & events
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // initial render
+      renderUsers();
+      renderServices(NUT_KEY,'nutritionList','nutCount');
+      renderServices(GROOM_KEY,'groomList','groomCount');
+
+      // search
+      $('searchUser').addEventListener('input', (e)=>renderUsers(e.target.value));
+
+      // buttons
+      $('btnRefresh').addEventListener('click', ()=>renderUsers($('searchUser').value));
+      $('btnClearAll').addEventListener('click', clearAllUsers);
+      $('btnExport').addEventListener('click', exportCSV);
+
+      $('btnAddNutrition').addEventListener('click', ()=>addService(NUT_KEY,'nutritionTitle','nutritionPoints','nutritionList','nutCount'));
+      $('btnViewNutrition').addEventListener('click', ()=>renderServices(NUT_KEY,'nutritionList','nutCount'));
+      $('btnClearNutrition').addEventListener('click', ()=>clearServices(NUT_KEY,'nutritionList','nutCount'));
+
+      $('btnAddGroom').addEventListener('click', ()=>addService(GROOM_KEY,'groomTitle','groomPoints','groomList','groomCount'));
+      $('btnViewGroom').addEventListener('click', ()=>renderServices(GROOM_KEY,'groomList','groomCount'));
+      $('btnClearGroom').addEventListener('click', ()=>clearServices(GROOM_KEY,'groomList','groomCount'));
+
+      // modal controls
+      $('modalClose').addEventListener('click', ()=>{ closeModal(); });
+      $('modalRemove').addEventListener('click', ()=>{ removeFromModal(); });
+      $('modalBackdrop').addEventListener('click', (e)=>{ if(e.target=== $('modalBackdrop')) closeModal(); });
+    });
+
+    // expose inline functions
+    window.openModal = openModal;
+    window.removeUser = removeUser;
+    window.switchView = switchView;
+    window.removeService = removeService;
+
+    // constants
+    const NUT_KEY = 'nutritionServices', GROOM_KEY = 'groomingServices';
+  </script>
+</body>
+</html>

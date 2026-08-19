@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Pet Care Shops - Bengaluru</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #f1f8e9);
+      color: #333;
+    }
+
+    header {
+      background-color: #1a7991;
+      color: white;
+      padding: 30px;
+      text-align: center;
+      font-size: 36px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    nav {
+            display:flex;
+            justify-content:center;
+            background-color:bisque;
+        }
+    nav a {
+            color:black;
+            padding:14px 20px;
+            text-decoration:none;
+            text-align:center;
+        }
+    nav a:hover {
+            background-color:#ff6347;
+        }        
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .input-section {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .input-section input {
+      padding: 12px 16px;
+      font-size: 16px;
+      width: 60%;
+      max-width: 400px;
+      border-radius: 8px;
+      border: 1px solid #bbb;
+      margin-right: 10px;
+    }
+
+    .input-section button {
+      padding: 12px 20px;
+      font-size: 16px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .input-section button:hover {
+      background-color: #2e7d32;
+    }
+
+    .shop-grid {
+      display: grid;
+      gap: 30px;
+      grid-template-columns: 1fr;
+    }
+
+    .shop {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    .shop h2 {
+      color: #00796b;
+      margin-top: 0;
+    }
+
+    iframe {
+      width: 100%;
+      height: 300px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .back-button {
+      display: flex;
+      justify-content: center;
+      margin: 50px 0 20px;
+    }
+
+    .back-button button {
+      background-color: #e53935;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .back-button button:hover {
+      background-color: #b71c1c;
+    }
+
+    @media (min-width: 768px) {
+      .shop-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>Find Pet Care Shops Near Bengaluru</header>
+<nav>
+        <a href="home.html">Home</a>
+        <a href="groom.html">Grooming</a>
+        <a href="nutrition.html">Nutrition</a>
+        <a href="Booking.html">Booking</a>
+        <a href="location.html">Location</a>
+        <a href="about.html">About Us</a>
+    </nav>
+
+<div class="container">
+
+  <!-- User Location Input -->
+  <div class="input-section">
+    <input type="text" placeholder="Enter your location..." />
+    <button onclick="alert('This is a visual placeholder. Real location features require backend integration.')">Search</button>
+  </div>
+
+  <!-- Shops List -->
+  <div class="shop-grid">
+    <!-- Shop 1 -->
+    <div class="shop">
+      <h2>The Pet Story – Koramangala</h2>
+      <p><strong>Address:</strong> No. 37, 1st Cross Rd, 5th Block, Koramangala, Bengaluru</p>
+      <p><strong>Services:</strong> Grooming, Boarding, Veterinary, Accessories</p>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62200.40756696117!2d77.58206451293644!3d12.934833193520986!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1446599aaad7%3A0x88f0a8c0e49e51d0!2sThe%20Pet%20Story!5e0!3m2!1sen!2sin!4v1683819056102!5m2!1sen!2sin"></iframe>
+    </div>
+
+    <!-- Shop 2 -->
+    <div class="shop">
+      <h2>Paws & Claws – Indiranagar</h2>
+      <p><strong>Address:</strong> 417, 1st A Main, Indiranagar 1st Stage, Bengaluru</p>
+      <p><strong>Services:</strong> Grooming, Spa, Daycare, Pet Products</p>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62200.40756696117!2d77.60915074603774!3d12.96954716297305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae17198f3c2089%3A0x307c3e416a1134f3!2sPaws%20%26%20Claws%20Pet%20Grooming%20Salon!5e0!3m2!1sen!2sin!4v1683820333707!5m2!1sen!2sin"></iframe>
+    </div>
+
+    <!-- Shop 3 -->
+    <div class="shop">
+      <h2>Heads Up For Tails – HSR Layout</h2>
+      <p><strong>Address:</strong> 1880, 27th Main Rd, Sector 2, HSR Layout, Bengaluru</p>
+      <p><strong>Services:</strong> Pet Spa, Grooming, Premium Products</p>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62205.40809529689!2d77.61772311743834!3d12.908135101254635!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae152a1c7dc4cf%3A0xe0cb4c41e8a7fa38!2sHeads%20Up%20For%20Tails!5e0!3m2!1sen!2sin!4v1683896103050!5m2!1sen!2sin"></iframe>
+    </div>
+
+    <!-- Shop 4 -->
+    <div class="shop">
+      <h2>Tail Lovers Company – Whitefield</h2>
+      <p><strong>Address:</strong> 62/1A, Hagadur Main Rd, Whitefield, Bengaluru</p>
+      <p><strong>Services:</strong> Grooming, Veterinary, Day Boarding, Accessories</p>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62208.46280351704!2d77.73918426878189!3d12.97904500082521!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae123cfafdd3f9%3A0x37cc3809f3133e33!2sTail%20Lovers%20Company!5e0!3m2!1sen!2sin!4v1683896247753!5m2!1sen!2sin"></iframe>
+    </div>
+  </div>
+</div>
+</body>
+</html>

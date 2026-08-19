@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Booking — Pet Care Assistant</title>
+<style>
+  /* ---- Warm coral/orange theme (no blue) ---- */
+  :root{
+    --bg: #fff6f2;            /* soft warm background */
+    --panel: #ffffff;
+    --accent: #ff6b35;        /* coral */
+    --accent-2: #ffb86b;      /* warm gold */
+    --muted: #6a6b6b;
+    --radius: 12px;
+    --shadow-soft: 0 8px 20px rgba(40,20,10,0.06);
+    --shadow-deep: 0 18px 40px rgba(40,20,10,0.08);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    background: linear-gradient(180deg, var(--bg) 0%, #fffaf7 100%);
+    color: #2d2a28;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* header — slightly bigger */
+  header{
+    background: linear-gradient(90deg,#b0412a,#ff6b35);
+    padding: 34px 18px;                 /* larger */
+    box-shadow: var(--shadow-deep);
+    position: sticky;
+    top:0;
+    z-index:50;
+  }
+  header .inner{
+    max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  }
+  header h1{ margin:0; font-size:30px; font-weight:900; letter-spacing:0.4px; color:#fff; } /* larger */
+  header nav{ display:flex; gap:10px; align-items:center; }
+  header nav a{
+    color: rgba(255,255,255,0.95); text-decoration:none;padding:8px 10px;border-radius:8px;font-weight:800;
+    opacity:0.95; background: transparent;
+  }
+  header nav a.active{ background: rgba(255,255,255,0.12) }
+
+  /* page container */
+  .wrap{ max-width:1000px; margin:20px auto; padding: 12px; }
+
+  /* main card */
+  .card{
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding:16px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(40,20,10,0.04);
+  }
+
+  /* grid: left saved items, right controls */
+  .grid{
+    display:grid;
+    grid-template-columns: 360px 1fr;
+    gap:16px;
+    align-items:start;
+  }
+
+  /* left saved items */
+  .saved {
+    padding:14px;
+    border-radius:10px;
+    background: #ffffff;
+    border: 1px solid rgba(40,20,10,0.03);
+  }
+  .saved h2{ margin:0 0 6px 0; font-size:18px; color:var(--accent-2); }
+  .saved .note{ color:var(--muted); font-size:13px; margin-bottom:10px; }
+
+  .items { display:flex; flex-direction:column; gap:10px; max-height:420px; overflow:auto; padding-right:6px; }
+  .item {
+    display:flex; align-items:center; gap:10px; padding:10px; border-radius:10px;
+    background: linear-gradient(180deg,#fffdfa,#ffffff);
+    border:1px solid rgba(40,20,10,0.03);
+  }
+  .item .icon {
+    width:48px;height:48px;border-radius:10px;background:linear-gradient(90deg,var(--accent-2),#ffd8b3);display:flex;align-items:center;justify-content:center;font-weight:800;color:#3b2016;
+  }
+  .item .meta { display:flex; flex-direction:column; gap:3px; }
+  .item .meta .title { font-weight:800; color:#3b2016; }
+  .item .meta .sub { color:var(--muted); font-size:13px; }
+  .item .actions { margin-left:auto; display:flex; gap:8px; align-items:center; }
+
+  .small-btn {
+    background:transparent;border:1px solid rgba(40,20,10,0.06); color:var(--accent); padding:6px 8px;border-radius:8px; cursor:pointer; font-weight:700;
+  }
+  .small-btn:hover{ background: rgba(255,107,53,0.06); color:#3b2016; transform:translateY(-2px) }
+
+  /* right controls */
+  .controls { padding:12px; border-radius:10px; background: #fffaf7; border:1px solid rgba(40,20,10,0.03) }
+  .controls label{ display:block; font-weight:800; margin-bottom:6px; color:var(--accent) }
+  .controls select, .controls input[type="text"], .controls input[type="tel"]{
+    width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(40,20,10,0.06); background:transparent; color:#3b2016; font-weight:700;
+  }
+  .controls .row { display:flex; gap:10px; margin-bottom:12px; }
+  .controls .pill-row { display:flex; gap:8px; flex-wrap:wrap; }
+  .pill { padding:8px 10px; border-radius:999px; cursor:pointer; background: #fff6f2; border: 1px solid rgba(40,20,10,0.03); color:var(--muted); font-weight:800 }
+  .pill.active { background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:#3b2016; box-shadow:0 8px 20px rgba(255,107,53,0.06); transform:translateY(-2px) }
+
+  .muted { color:var(--muted); font-size:13px }
+
+  .actions-row { display:flex; gap:8px; align-items:center; justify-content:flex-end; margin-top:8px }
+  .btn-primary { padding:10px 14px; border-radius:10px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border:none; color:white; font-weight:800; cursor:pointer; box-shadow:0 10px 26px rgba(40,20,10,0.06) }
+  .btn-disabled { opacity:0.5; cursor:not-allowed }
+
+  .confirm-list { margin-top:12px; display:flex; flex-direction:column; gap:10px; }
+  .confirm-card { padding:12px; border-radius:8px; background:#fffaf7; border:1px solid rgba(40,20,10,0.03) }
+
+  footer { margin-top:18px; text-align:center; color:var(--muted); font-size:13px }
+
+  /* responsive */
+  @media (max-width:900px){
+    .grid{ grid-template-columns: 1fr; }
+    header h1{ font-size:24px; padding-left:6px }
+  }
+</style>
+</head>
+<body>
+
+  <!-- header kept like old pages (larger) -->
+  <header>
+    <div class="inner">
+      <h1>Personalized Pet Care</h1>
+      <nav>
+        <a href="home.html">Home</a>
+        <a href="groom.html">Grooming</a>
+        <a href="nutrition.html">Nutrition</a>
+        <a href="booking.html" class="active">Booking</a>
+        <a href="location.html">Location</a>
+        <a href="about.html">About Us</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="font-weight:900; font-size:18px; color:#3b2016">Booking Center</div>
+          <!-- content below heading removed as requested -->
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="btnClearAll" class="small-btn">Clear Saved Items</button>
+          <button id="btnRefresh" class="small-btn">Refresh</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- LEFT: saved items -->
+        <section class="saved">
+          <h2>Saved Services</h2>
+          <div class="note">These come from Book actions on Grooming / Nutrition pages.</div>
+
+          <div class="items" id="itemsList">
+            <!-- JS populates saved items here -->
+          </div>
+
+          <div style="margin-top:12px; display:flex; gap:8px; justify-content:space-between; align-items:center">
+            <div class="muted">Total saved: <span id="savedCount">0</span></div>
+            <div></div>
+          </div>
+        </section>
+
+        <!-- RIGHT: location, day, submit -->
+        <aside class="controls">
+          <label>Select Location</label>
+          <select id="locationSelect">
+            <!-- JS populates from Location.html or fallback -->
+          </select>
+          <div class="muted" style="margin-top:8px">Locations come from your Location page (localStorage.petLocations). If none, defaults are used.</div>
+
+          <div style="height:12px"></div>
+
+          <label>Choose Day</label>
+          <div class="pill-row" id="dayRow" style="margin-bottom:6px">
+            <!-- day pills populated by JS -->
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:10px;align-items:center">
+            <div style="flex:1">
+              <label>Contact - Name</label>
+              <input id="contactName" type="text" placeholder="Full name" style="width:100%; padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(40,20,10,0.06); color:#3b2016;font-weight:700" />
+            </div>
+            <div style="width:160px">
+              <label>Contact - Phone</label>
+              <input id="contactPhone" type="tel" placeholder="Phone number" style="width:100%; padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(40,20,10,0.06); color:#3b2016;font-weight:700" />
+            </div>
+          </div>
+
+          <div class="actions-row">
+            <div id="errorBox" style="color:#b73e2d;font-weight:800"></div>
+            <button id="btnSubmit" class="btn-primary btn-disabled" disabled>Submit Booking</button>
+          </div>
+
+          <div id="results" class="confirm-list" aria-live="polite"></div>
+        </aside>
+      </div>
+    </div>
+
+    <footer>&copy; 2025 Pet Care Assistant — Booking Module</footer>
+  </main>
+
+<script>
+/* -------------------------
+   Booking.html logic (append-fix for pendingBooking)
+   ------------------------- */
+
+/* helpers */
+const $ = id => document.getElementById(id);
+const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+/* Merge single pendingBooking into pendingBookings array (append) then remove pendingBooking.
+   This guarantees each Book Slot press adds to the array instead of replacing previous items.
+*/
+function mergePendingBooking(){
+  try{
+    const singleRaw = localStorage.getItem('pendingBooking');
+    if(!singleRaw) return;
+    let single = null;
+    try { single = JSON.parse(singleRaw); } catch(e){ single = null; }
+    if(!single || !single.service) {
+      // invalid -> remove
+      localStorage.removeItem('pendingBooking');
+      return;
+    }
+
+    // read existing array
+    let arr = [];
+    try {
+      const arrRaw = localStorage.getItem('pendingBookings');
+      if(arrRaw) {
+        const parsed = JSON.parse(arrRaw);
+        if(Array.isArray(parsed)) arr = parsed;
+      }
+    } catch(e){ arr = []; }
+
+    // append with timestamp (so dedupe won't drop newer items)
+    const toPush = Object.assign({}, single, { timestamp: new Date().toISOString() });
+    arr.push(toPush);
+
+    // save back and remove single key
+    localStorage.setItem('pendingBookings', JSON.stringify(arr));
+    localStorage.removeItem('pendingBooking');
+  }catch(e){
+    console.warn('mergePendingBooking failed', e);
+  }
+}
+
+/* Read pending items (supports pendingBooking and pendingBookings) */
+function readPendingItems(){
+  const list = [];
+  try{
+    const rawArr = localStorage.getItem('pendingBookings');
+    if(rawArr){
+      const parsed = JSON.parse(rawArr);
+      if(Array.isArray(parsed)){
+        parsed.forEach(p=>{
+          if(p && p.service) list.push(Object.assign({}, p));
+        });
+      }
+    }
+  }catch(e){ console.warn('pendingBookings parse err', e); }
+  // If for some reason a pendingBooking still exists (should be merged on load),
+  // include it too — this is fallback only.
+  try{
+    const raw = localStorage.getItem('pendingBooking');
+    if(raw){
+      const p = JSON.parse(raw);
+      if(p && p.service){
+        list.push(Object.assign({}, p));
+      }
+    }
+  }catch(e){ /* ignore */ }
+
+  // Deduplicate but preserve order (first-in first shown). Dedupe by unique key
+  const dedup = [];
+  const seen = new Set();
+  list.forEach(it=>{
+    // build a stable key; prefer timestamp if present (ensures multiple identical services at different times are kept)
+    const key = (it.timestamp || '') + '||' + (it.service||'') + '||' + (it.sub||'');
+    if(!seen.has(key)){
+      seen.add(key);
+      dedup.push(it);
+    } else {
+      // if timestamp is absent, create a fallback unique key using JSON to preserve duplicates:
+      const fallbackKey = JSON.stringify(it);
+      if(!seen.has(fallbackKey)){
+        seen.add(fallbackKey);
+        dedup.push(it);
+      }
+    }
+  });
+  return dedup;
+}
+
+/* clear pending items */
+function clearPending(){
+  localStorage.removeItem('pendingBookings');
+  localStorage.removeItem('pendingBooking');
+}
+
+/* load locations from localStorage.petLocations or fallback list */
+function loadLocations(){
+  const sel = $('locationSelect');
+  sel.innerHTML='';
+  let list = [
+    {id:'loc-mg','name':'MG Road, Bengaluru'},
+    {id:'loc-jayan','name':'Jayanagar, Bengaluru'},
+    {id:'loc-korm','name':'Koramangala, Bengaluru'},
+    {id:'loc-ind','name':'Indiranagar, Bengaluru'}
+  ];
+  try{
+    const raw = localStorage.getItem('petLocations');
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length) list = parsed;
+    }
+  }catch(e){ /* ignore */ }
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = '-- choose location --';
+  sel.appendChild(placeholder);
+  list.forEach(l=>{
+    const o = document.createElement('option');
+    o.value = l.id || l.name;
+    o.textContent = l.name || l.id;
+    sel.appendChild(o);
+  });
+}
+
+/* create day pills */
+function buildDayPills(){
+  const row = $('dayRow');
+  row.innerHTML = '';
+  days.forEach(d=>{
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pill';
+    b.textContent = d;
+    b.dataset.day = d;
+    b.onclick = (e)=> {
+      document.querySelectorAll('#dayRow .pill').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      updateState();
+    };
+    row.appendChild(b);
+  });
+}
+
+/* render saved items */
+function renderItems(){
+  const itemsList = $('itemsList');
+  itemsList.innerHTML = '';
+  const items = readPendingItems();
+  $('savedCount').textContent = items.length;
+  if(items.length === 0){
+    const empty = document.createElement('div');
+    empty.className = 'muted';
+    empty.textContent = 'No saved items. Press "Book Slot" on Grooming or Nutrition pages to add items here.';
+    itemsList.appendChild(empty);
+    return;
+  }
+  items.forEach((it, idx)=>{
+    const el = document.createElement('div');
+    el.className = 'item';
+    el.innerHTML = `
+      <div class="icon">${(it.service||'').charAt(0)||'P'}</div>
+      <div class="meta">
+        <div class="title">${it.service || 'Service'}</div>
+        <div class="sub">${it.sub || '—'}</div>
+      </div>
+      <div class="actions">
+        <button class="small-btn" data-idx="${idx}">Remove</button>
+      </div>
+    `;
+    itemsList.appendChild(el);
+  });
+
+  // wire remove buttons
+  itemsList.querySelectorAll('.small-btn').forEach(btn => {
+    btn.onclick = ()=>{
+      const idx = Number(btn.dataset.idx);
+      const arr = readPendingItems();
+      arr.splice(idx,1);
+      // save back the array to localStorage.pendingBookings (overwrite)
+      try{
+        localStorage.setItem('pendingBookings', JSON.stringify(arr));
+        // also remove pendingBooking fallback if array empty
+        if(arr.length===0) localStorage.removeItem('pendingBooking');
+      }catch(e){
+        console.warn('Could not update pendingBookings', e);
+      }
+      renderItems(); updateState();
+    };
+  });
+}
+
+/* random helpers */
+function randOf(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function randomTime(){
+  const hour = Math.floor(Math.random() * (19 - 10 + 1)) + 10; // 10..19
+  const mins = Math.random() < 0.5 ? '00' : '30';
+  return (hour<10? '0'+hour : ''+hour) + ':' + (hour===19 ? '00' : mins);
+}
+
+/* submit booking */
+function submitBooking(){
+  const items = readPendingItems();
+  if(items.length === 0){
+    setError('No saved service items to book.');
+    return;
+  }
+  const locSel = $('locationSelect');
+  const chosenLoc = locSel.value;
+  const name = $('contactName').value.trim();
+  const phone = $('contactPhone').value.trim();
+  const activeDayEl = document.querySelector('#dayRow .pill.active');
+  const chosenDay = activeDayEl ? activeDayEl.dataset.day : '';
+
+  if(!chosenLoc){
+    setError('Please choose a location.');
+    return;
+  }
+  if(!chosenDay){
+    setError('Please choose a day.');
+    return;
+  }
+  clearError();
+
+  const bookings = [];
+  items.forEach(it=>{
+    const booking = {};
+    booking.id = 'bk_' + Math.floor(Math.random()*9e8 + Date.now()%1e6);
+    booking.service = it.service || 'Service';
+    booking.sub = it.sub || '';
+    const loc = { id: chosenLoc, name: locSel.selectedOptions[0].textContent };
+    booking.locationId = loc.id || loc.name;
+    booking.locationLabel = loc.name || loc.id;
+    booking.day = chosenDay;
+    booking.time = randomTime();
+    booking.contactName = name || '';
+    booking.contactPhone = phone || '';
+    booking.createdAt = new Date().toISOString();
+    bookings.push(booking);
+  });
+
+  try{
+    const raw = localStorage.getItem('bookings');
+    const arr = raw ? JSON.parse(raw) : [];
+    bookings.forEach(b=>arr.push(b));
+    localStorage.setItem('bookings', JSON.stringify(arr));
+  }catch(e){
+    console.warn('could not save bookings', e);
+  }
+
+  displayResults(bookings);
+  clearPending();
+  renderItems();
+}
+
+/* display confirmation */
+function displayResults(bookings){
+  const box = $('results');
+  box.innerHTML = '';
+  bookings.forEach(b=>{
+    const c = document.createElement('div'); c.className = 'confirm-card';
+    c.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center">
+        <div>
+          <div style="font-weight:900;color:var(--accent)">${b.service}${b.sub? ' — '+b.sub : ''}</div>
+          <div class="muted" style="margin-top:6px">${b.locationLabel}</div>
+          <div style="margin-top:6px;color:var(--muted)">Contact: ${b.contactName || '—'} ${b.contactPhone ? ' / ' + b.contactPhone : ''}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-weight:900">${b.day}</div>
+          <div class="muted" style="margin-top:6px">${b.time}</div>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-weight:800;color:var(--muted)">Booking id: <span style="color:#3b2016;font-weight:900">${b.id}</span></div>
+    `;
+    box.appendChild(c);
+  });
+}
+
+/* helpers */
+function setError(txt){ $('errorBox').textContent = txt || ''; }
+function clearError(){ $('errorBox').textContent = ''; }
+
+/* enable/disable submit */
+function updateState(){
+  const items = readPendingItems();
+  const chosenLoc = $('locationSelect').value;
+  const chosenDay = document.querySelector('#dayRow .pill.active');
+  const ok = items.length > 0 && chosenLoc && chosenDay;
+  const btn = $('btnSubmit');
+  if(ok){
+    btn.disabled = false; btn.classList.remove('btn-disabled');
+  } else { btn.disabled = true; btn.classList.add('btn-disabled'); }
+}
+
+/* events */
+$('btnRefresh').addEventListener('click', ()=>{ renderAll(); });
+$('btnClearAll').addEventListener('click', ()=>{ clearPending(); renderItems(); updateState(); });
+$('btnSubmit').addEventListener('click', submitBooking);
+$('locationSelect').addEventListener('change', updateState);
+$('contactName').addEventListener('input', ()=>{}); // kept for future use
+$('contactPhone').addEventListener('input', ()=>{}); // kept for future use
+
+/* render helpers */
+function renderAll(){
+  loadLocations();
+  buildDayPills();
+  renderItems();
+  updateState();
+}
+
+/* onLoad: merge any single pendingBooking into pendingBookings (append), then render */
+(function onLoad(){
+  try{
+    mergePendingBooking(); // <<-- important: append single into array
+  }catch(e){ console.warn(e); }
+  renderAll();
+})();
+</script>
+</body>
+</html>

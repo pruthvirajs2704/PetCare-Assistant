@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pet Nutrition</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #fdfdfd 50%, #e1f5fe 50%);
+      color: #333;
+    }
+
+    header {
+      background-color: #66bb6a;
+      color: white;
+      padding: 40px 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    nav {
+      display:flex;
+      justify-content:center;
+      background-color:bisque;
+    }
+    nav a {
+      color:black;
+      padding:14px 20px;
+      text-decoration:none;
+      text-align:center;
+    }
+    nav a:hover {
+      background-color:#ff6347;
+    }
+
+    header h1 {
+      font-size: 48px;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px #388e3c;
+      margin: 0;
+      /* subtle float animation added */
+      animation: floatTitle 6s ease-in-out infinite;
+    }
+
+    @keyframes floatTitle {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .content {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      border-top: 6px solid #66bb6a;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.4s ease;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: cardIn 420ms ease forwards;
+    }
+
+    /* staggered animation using nth-child so structure unchanged */
+    .grid .card:nth-child(1) { animation-delay: 0.06s; }
+    .grid .card:nth-child(2) { animation-delay: 0.12s; }
+    .grid .card:nth-child(3) { animation-delay: 0.18s; }
+    .grid .card:nth-child(4) { animation-delay: 0.24s; }
+    .grid .card:nth-child(5) { animation-delay: 0.30s; }
+    .grid .card:nth-child(6) { animation-delay: 0.36s; }
+
+    @keyframes cardIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.12);
+    }
+
+    .card h2 {
+      color: #388e3c;
+      font-size: 22px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 6px;
+      margin: 0 0 12px 0;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin-top: 10px;
+    }
+
+    ul li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    /* Book Slot button style (added) */
+    .book-slot {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: linear-gradient(90deg,#66bb6a,#8ee08e);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 6px 16px rgba(102,187,106,0.12);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      cursor: pointer;
+      border: none;
+    }
+    .book-slot:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(102,187,106,0.18);
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 36px;
+      }
+    }
+
+    /* dynamic services card at bottom (keeps original structure but styled) */
+    .card .dynamic-list {
+      margin-top: 8px;
+      padding-top: 6px;
+    }
+    #dynamic-services { list-style: none; padding-left: 0; margin: 0; }
+    #dynamic-services li { display:flex; justify-content:space-between; align-items:center; padding:8px 6px; border-bottom:1px dashed #eee; }
+    #dynamic-services li:last-child { border-bottom:none; }
+    .service-title { font-weight:600; color:#333; }
+    .service-book { text-decoration:none; padding:8px 12px; border-radius:8px; background:#66bb6a; color:#fff; font-weight:600; cursor: pointer; border:none; }
+    .service-book:hover { opacity:0.95; transform:translateY(-2px); }
+
+    /* small toast notification */
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: linear-gradient(90deg,#0b63c6,#6c5ce7);
+      color: white;
+      padding: 12px 16px;
+      border-radius: 10px;
+      box-shadow: 0 12px 36px rgba(12,36,80,0.18);
+      font-weight: 700;
+      transform: translateY(24px);
+      opacity: 0;
+      transition: transform .28s cubic-bezier(.2,.9,.2,1), opacity .22s ease;
+      z-index: 9999;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>NUTRITION</h1>
+  </header>
+  <nav>
+        <a href="home.html">Home</a>
+        <a href="groom.html">Grooming</a>
+        <a href="nutrition.html">Nutrition</a>
+        <a href="Booking.html">Booking</a>
+        <a href="location.html">Location</a>
+        <a href="about.html">About Us</a>
+    </nav>
+
+  <div class="content">
+    <div class="grid">
+      <!-- Top 3 Boxes -->
+      <div class="card">
+        <h2>Balanced Diet</h2>
+        <ul>
+          <li>Includes protein, fats, carbs, vitamins & minerals</li>
+          <li>Tailored to species, age, and activity level</li>
+          <li>Supports growth, energy, and immunity</li>
+        </ul>
+        <!-- Book Slot updated to save pending booking (no redirect) -->
+        <button class="book-slot" type="button" onclick="bookService('Nutrition','Balanced Diet', this)">Book Slot</button>
+      </div>
+
+      <div class="card">
+        <h2>Quality Ingredients</h2>
+        <ul>
+          <li>Whole meats (chicken, beef, salmon)</li>
+          <li>Natural sources of vitamins and fiber</li>
+          <li>Free from artificial colors and fillers</li>
+        </ul>
+        <button class="book-slot" type="button" onclick="bookService('Nutrition','Quality Ingredients', this)">Book Slot</button>
+      </div>
+
+      <div class="card">
+        <h2>Types of Food</h2>
+        <ul>
+          <li>Dry kibble for convenience and dental benefits</li>
+          <li>Wet food for hydration and taste</li>
+          <li>Raw or homemade under vet supervision</li>
+        </ul>
+        <button class="book-slot" type="button" onclick="bookService('Nutrition','Types of Food', this)">Book Slot</button>
+      </div>
+
+      <!-- Bottom 3 Boxes -->
+      <div class="card">
+        <h2>Food to Avoid</h2>
+        <ul>
+          <li>Chocolate, onions, garlic, grapes/raisins</li>
+          <li>Xylitol (in sugar-free products)</li>
+          <li>Fatty scraps or cooked bones</li>
+        </ul>
+        <button class="book-slot" type="button" onclick="bookService('Nutrition','Food to Avoid', this)">Book Slot</button>
+      </div>
+
+      <div class="card">
+        <h2>Hydration</h2>
+        <ul>
+          <li>Clean, fresh water always available</li>
+          <li>Increased intake with dry diets or hot weather</li>
+          <li>Monitor for signs of dehydration</li>
+        </ul>
+        <button class="book-slot" type="button" onclick="bookService('Nutrition','Hydration', this)">Book Slot</button>
+      </div>
+
+      <div class="card">
+        <h2>Treats & Supplements</h2>
+        <ul>
+          <li>Treats should be less than 10% of daily calories</li>
+          <li>Use treats for training and bonding</li>
+          <li>Supplements (like omega-3s) only if needed</li>
+        </ul>
+        <button class="book-slot" type="button" onclick="bookService('Nutrition','Treats & Supplements', this)">Book Slot</button>
+      </div>
+
+      <div class="card" id="dynamicCard">
+        <h2>Other Available Pet Services</h2>
+        <div class="dynamic-list">
+          <ul id="dynamic-services">
+            <!-- Services added by admin will appear here -->
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- toast notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite">Saved to Booking page</div>
+
+<script>
+  /**
+   * bookService(service, sub, btnElement)
+   * - Saves pendingBooking to localStorage (no redirect).
+   * - Shows a small toast confirming the save.
+   * - Optionally highlights the clicked button briefly.
+   *
+   * Booking page (Booking.html) should read localStorage.pendingBooking
+   * and autofill the booking form when user visits it.
+   */
+  function bookService(service, sub, btn) {
+    try {
+      const obj = { service: service || 'Nutrition', sub: sub || '' , timestamp: new Date().toISOString() };
+      localStorage.setItem('pendingBooking', JSON.stringify(obj));
+      showToast('Saved to Booking page');
+      // small visual feedback on the button
+      if (btn) {
+        btn.style.transform = 'translateY(-4px) scale(0.99)';
+        btn.style.boxShadow = '0 8px 20px rgba(0,0,0,0.08)';
+        setTimeout(()=>{ btn.style.transform=''; btn.style.boxShadow=''; }, 320);
+      }
+    } catch (e) {
+      console.warn('Could not store pending booking', e);
+      showToast('Could not save booking locally', true);
+    }
+  }
+
+  /* Toast UI */
+  function showToast(txt, isError){
+    const t = document.getElementById('toast');
+    t.textContent = txt || 'Saved to Booking page';
+    if(isError) t.style.background = 'linear-gradient(90deg,#b63434,#d25c5c)';
+    else t.style.background = 'linear-gradient(90deg,#0b63c6,#6c5ce7)';
+    t.classList.add('show');
+    clearTimeout(showToast._h);
+    showToast._h = setTimeout(()=> t.classList.remove('show'), 2600);
+  }
+
+  /* Dynamic services loader: if nutritionServices exist in localStorage,
+     show them here and wire their Book Slot to call bookService(...) */
+  function loadServices() {
+    const services = JSON.parse(localStorage.getItem('nutritionServices')) || [];
+    const list = document.getElementById('dynamic-services');
+    const dynamicCard = document.getElementById('dynamicCard');
+
+    if (!services || services.length === 0) {
+      // Hide the dynamic card if there are no admin-provided services
+      dynamicCard.style.display = 'none';
+      return;
+    }
+
+    dynamicCard.style.display = 'block';
+    list.innerHTML = '';
+
+    services.forEach(s => {
+      const li = document.createElement('li');
+
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'service-title';
+      titleSpan.textContent = s.title || 'Service';
+
+      const bookBtn = document.createElement('button');
+      bookBtn.className = 'service-book';
+      bookBtn.type = 'button';
+      bookBtn.textContent = 'Book Slot';
+      // wire dynamic booking to pass the admin-defined title as `sub`
+      bookBtn.onclick = () => {
+        bookService('Nutrition', s.title || '', bookBtn);
+      };
+
+      li.appendChild(titleSpan);
+      li.appendChild(bookBtn);
+      list.appendChild(li);
+    });
+  }
+
+  /* Initialize dynamic list on load */
+  window.addEventListener('DOMContentLoaded', loadServices);
+</script>
+
+</body>
+</html>

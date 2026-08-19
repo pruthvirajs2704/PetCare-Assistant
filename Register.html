@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS7ZHa87GXTZUPD1KilZIasmfmraGEVMMvPxg&s');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+        }
+        .register-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            margin: 80px auto;
+            width: 400px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        h2 {
+            text-align: center;
+            color: #007bff;
+        }
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            color: #333;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .note { font-size:13px; color:#666; margin-top:8px; }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <h2>Create Your Account</h2>
+    <form id="registerForm" autocomplete="off">
+        <label for="name">Full Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="mobile">Mobile Number:</label>
+        <input type="text" id="mobile" name="mobile" pattern="[0-9]{10}" title="Enter a valid 10-digit mobile number" required>
+
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="3" required></textarea>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" minlength="6" required>
+
+        <button type="submit">Register</button>
+        <div class="note">By registering you agree to our terms. Your details will be saved locally for admin visibility.</div>
+    </form>
+</div>
+
+<script>
+    // Utility: safely get localStorage array or create new
+    function readArray(key){
+        try{
+            const raw = localStorage.getItem(key);
+            if(!raw) return [];
+            const parsed = JSON.parse(raw);
+            return Array.isArray(parsed) ? parsed : [];
+        }catch(e){
+            console.warn('readArray parse error for key', key, e);
+            return [];
+        }
+    }
+
+    function writeArray(key, arr){
+        try{
+            localStorage.setItem(key, JSON.stringify(arr));
+        }catch(e){
+            console.warn('writeArray error', key, e);
+        }
+    }
+
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
+        e.preventDefault(); // Prevent form submission
+
+        const name = document.getElementById("name").value.trim();
+        const mobile = document.getElementById("mobile").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const password = document.getElementById("password").value;
+
+        // validation
+        if (name === "") {
+            alert("Please enter your full name.");
+            return;
+        }
+        if (!/^\d{10}$/.test(mobile)) {
+            alert("Please enter a valid 10-digit mobile number.");
+            return;
+        }
+        if (email === "") {
+            alert("Please enter your email address.");
+            return;
+        }
+        if (address === "") {
+            alert("Please enter your address.");
+            return;
+        }
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters long.");
+            return;
+        }
+
+        // Prepare user object
+        const user = {
+            id: 'u_' + Date.now(),
+            name: name,
+            mobile: mobile,
+            email: email,
+            address: address,
+            password: password, // stored in plain text for this local demo (consider hashing in real app)
+            createdAt: new Date().toISOString()
+        };
+
+        // Save into registeredUsers array in localStorage (append)
+        try {
+            const key = 'registeredUsers';
+            const arr = readArray(key);
+            arr.push(user);
+            writeArray(key, arr);
+        } catch (err) {
+            console.warn('Could not save user to localStorage', err);
+        }
+
+        // show confirmation and redirect
+        alert("Registration successful! Your details have been saved. Redirecting to sign-in page...");
+        // redirect after saving
+        window.location.href = "signin.html";
+    });
+</script>
+
+</body>
+</html>

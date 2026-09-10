@@ -1,8 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pet Nutrition</title>
   <style>
     body {
@@ -74,7 +71,6 @@
       animation: cardIn 420ms ease forwards;
     }
 
-    /* staggered animation using nth-child so structure unchanged */
     .grid .card:nth-child(1) { animation-delay: 0.06s; }
     .grid .card:nth-child(2) { animation-delay: 0.12s; }
     .grid .card:nth-child(3) { animation-delay: 0.18s; }
@@ -109,7 +105,6 @@
       line-height: 1.6;
     }
 
-    /* Book Slot button style (added) */
     .book-slot {
       display: inline-block;
       margin-top: 12px;
@@ -135,7 +130,6 @@
       }
     }
 
-    /* dynamic services card at bottom (keeps original structure but styled) */
     .card .dynamic-list {
       margin-top: 8px;
       padding-top: 6px;
@@ -147,7 +141,6 @@
     .service-book { text-decoration:none; padding:8px 12px; border-radius:8px; background:#66bb6a; color:#fff; font-weight:600; cursor: pointer; border:none; }
     .service-book:hover { opacity:0.95; transform:translateY(-2px); }
 
-    /* small toast notification */
     .toast {
       position: fixed;
       right: 18px;
@@ -176,14 +169,14 @@
         <a href="home.html">Home</a>
         <a href="groom.html">Grooming</a>
         <a href="nutrition.html">Nutrition</a>
-        <a href="Booking.html">Booking</a>
+        <a href="booking.html">Booking</a>
         <a href="location.html">Location</a>
         <a href="about.html">About Us</a>
     </nav>
 
   <div class="content">
     <div class="grid">
-      <!-- Top 3 Boxes -->
+      
       <div class="card">
         <h2>Balanced Diet</h2>
         <ul>
@@ -191,7 +184,7 @@
           <li>Tailored to species, age, and activity level</li>
           <li>Supports growth, energy, and immunity</li>
         </ul>
-        <!-- Book Slot updated to save pending booking (no redirect) -->
+        
         <button class="book-slot" type="button" onclick="bookService('Nutrition','Balanced Diet', this)">Book Slot</button>
       </div>
 
@@ -215,7 +208,6 @@
         <button class="book-slot" type="button" onclick="bookService('Nutrition','Types of Food', this)">Book Slot</button>
       </div>
 
-      <!-- Bottom 3 Boxes -->
       <div class="card">
         <h2>Food to Avoid</h2>
         <ul>
@@ -258,25 +250,16 @@
     </div>
   </div>
 
-  <!-- toast notification -->
   <div id="toast" class="toast" role="status" aria-live="polite">Saved to Booking page</div>
 
 <script>
-  /**
-   * bookService(service, sub, btnElement)
-   * - Saves pendingBooking to localStorage (no redirect).
-   * - Shows a small toast confirming the save.
-   * - Optionally highlights the clicked button briefly.
-   *
-   * Booking page (Booking.html) should read localStorage.pendingBooking
-   * and autofill the booking form when user visits it.
-   */
+  
   function bookService(service, sub, btn) {
     try {
       const obj = { service: service || 'Nutrition', sub: sub || '' , timestamp: new Date().toISOString() };
       localStorage.setItem('pendingBooking', JSON.stringify(obj));
       showToast('Saved to Booking page');
-      // small visual feedback on the button
+     
       if (btn) {
         btn.style.transform = 'translateY(-4px) scale(0.99)';
         btn.style.boxShadow = '0 8px 20px rgba(0,0,0,0.08)';
@@ -288,7 +271,6 @@
     }
   }
 
-  /* Toast UI */
   function showToast(txt, isError){
     const t = document.getElementById('toast');
     t.textContent = txt || 'Saved to Booking page';
@@ -299,15 +281,12 @@
     showToast._h = setTimeout(()=> t.classList.remove('show'), 2600);
   }
 
-  /* Dynamic services loader: if nutritionServices exist in localStorage,
-     show them here and wire their Book Slot to call bookService(...) */
   function loadServices() {
     const services = JSON.parse(localStorage.getItem('nutritionServices')) || [];
     const list = document.getElementById('dynamic-services');
     const dynamicCard = document.getElementById('dynamicCard');
 
     if (!services || services.length === 0) {
-      // Hide the dynamic card if there are no admin-provided services
       dynamicCard.style.display = 'none';
       return;
     }
@@ -326,7 +305,6 @@
       bookBtn.className = 'service-book';
       bookBtn.type = 'button';
       bookBtn.textContent = 'Book Slot';
-      // wire dynamic booking to pass the admin-defined title as `sub`
       bookBtn.onclick = () => {
         bookService('Nutrition', s.title || '', bookBtn);
       };
@@ -337,7 +315,6 @@
     });
   }
 
-  /* Initialize dynamic list on load */
   window.addEventListener('DOMContentLoaded', loadServices);
 </script>
 

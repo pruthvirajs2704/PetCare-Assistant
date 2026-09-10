@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
     <title>Pet Care</title>
@@ -28,7 +27,6 @@
             flex-direction:column;
         }
 
-        /* Header */
         header {
             background: linear-gradient(90deg, var(--primary), var(--primary-2));
             color: white;
@@ -74,7 +72,6 @@
         .logout-btn { background: linear-gradient(90deg,var(--primary),var(--accent)); color: white; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight:700; box-shadow: 0 8px 20px rgba(11,99,198,0.12); transition: transform .12s ease; }
         .logout-btn:hover { transform: translateY(-3px); opacity:0.95; }
 
-        /* Main content: two-column layout (left: image/symbols, right: details) */
         main {
             display:flex;
             align-items:flex-start;
@@ -101,7 +98,6 @@
             align-items:center;
         }
 
-        /* Left column: decorative pet panel (large symbols and label) */
         .pet-left {
             flex: 0 0 360px;
             min-width:260px;
@@ -134,7 +130,6 @@
         .pet-label { font-weight:800; color:#052a3b; font-size:18px; }
         .pet-sub { color:var(--muted); font-size:13px; text-align:center; max-width:300px; }
 
-        /* Right column: details panel (no navigation links) */
         .pet-right {
             flex:1 1 auto;
             display:flex;
@@ -153,14 +148,12 @@
         .detail-card h3 { margin:0 0 6px 0; color:#052a3b; }
         .detail-card p { margin:0; color:var(--muted); line-height:1.6; }
 
-        /* small stats row */
         .stats-row { display:flex; gap:12px; margin-top:6px; }
         .stat { background:linear-gradient(180deg,#fff,#fbffff); padding:10px 12px; border-radius:10px; box-shadow:0 8px 18px rgba(8,20,20,0.03); border:1px solid rgba(0,0,0,0.03); font-weight:700; }
         .stat small { display:block; font-weight:600; color:var(--muted); font-size:12px; }
 
         footer { background-color:#0b1a1a; color:white; text-align:center; padding:12px 0; margin-top:28px; }
 
-        /* Responsive adjustments */
         @media (max-width:960px){
             .pet-content { flex-direction:column; align-items:center; }
             .pet-left { width:100%; min-width:auto; }
@@ -202,7 +195,6 @@
     <main>
         <div class="pet-content" role="main">
 
-            <!-- LEFT: prominent dog & cat art (symbols) -->
             <div class="pet-left" aria-hidden="false">
                 <div class="pet-art" aria-hidden="true">
                     <!-- Larger, attractive dog + cat illustration SVG -->
@@ -215,7 +207,6 @@
                         </defs>
                         <rect width="240" height="240" rx="18" fill="url(#gA)" opacity="0.06" />
 
-                        <!-- dog body -->
                         <g transform="translate(20,40)">
                             <ellipse cx="60" cy="100" rx="52" ry="36" fill="#fff" />
                             <circle cx="28" cy="86" r="10" fill="#fff" />
@@ -223,14 +214,12 @@
                             <circle cx="46" cy="72" r="3" fill="#0b63c6" />
                         </g>
 
-                        <!-- cat body -->
                         <g transform="translate(120,34)">
                             <ellipse cx="60" cy="92" rx="36" ry="26" fill="#fff" />
                             <path d="M40 70 q12 -20 30 -6" stroke="#3bb0ff" stroke-width="3" fill="none" stroke-linecap="round" />
                             <circle cx="52" cy="78" r="3" fill="#3bb0ff" />
                         </g>
-
-                        <!-- heart accent -->
+                                
                         <path d="M120 78c6-9 18-9 24 0 3 5 0 12-6 15-6 3-9 5-15 0-6-4-9-9-3-15z" fill="#fff" opacity="0.95" transform="translate(-6,-6)" />
                     </svg>
                 </div>
@@ -239,7 +228,6 @@
                 <div class="pet-sub">Friendly tools for grooming, nutrition and everyday wellbeing — all in one view.</div>
             </div>
 
-            <!-- RIGHT: details about Grooming, Nutrition, Our Services (no links to pages) -->
             <div class="pet-right" aria-live="polite">
 
                 <div class="detail-card" aria-label="Grooming details">

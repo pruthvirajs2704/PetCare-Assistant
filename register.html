@@ -1,7 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Registration Page</title>
     <style>
         body {
@@ -88,7 +86,7 @@
 </div>
 
 <script>
-    // Utility: safely get localStorage array or create new
+    
     function readArray(key){
         try{
             const raw = localStorage.getItem(key);
@@ -110,7 +108,7 @@
     }
 
     document.getElementById("registerForm").addEventListener("submit", function(e) {
-        e.preventDefault(); // Prevent form submission
+        e.preventDefault(); 
 
         const name = document.getElementById("name").value.trim();
         const mobile = document.getElementById("mobile").value.trim();
@@ -118,7 +116,6 @@
         const address = document.getElementById("address").value.trim();
         const password = document.getElementById("password").value;
 
-        // validation
         if (name === "") {
             alert("Please enter your full name.");
             return;
@@ -140,18 +137,16 @@
             return;
         }
 
-        // Prepare user object
         const user = {
             id: 'u_' + Date.now(),
             name: name,
             mobile: mobile,
             email: email,
             address: address,
-            password: password, // stored in plain text for this local demo (consider hashing in real app)
+            password: password, 
             createdAt: new Date().toISOString()
         };
 
-        // Save into registeredUsers array in localStorage (append)
         try {
             const key = 'registeredUsers';
             const arr = readArray(key);
@@ -161,9 +156,8 @@
             console.warn('Could not save user to localStorage', err);
         }
 
-        // show confirmation and redirect
         alert("Registration successful! Your details have been saved. Redirecting to sign-in page...");
-        // redirect after saving
+       
         window.location.href = "signin.html";
     });
 </script>

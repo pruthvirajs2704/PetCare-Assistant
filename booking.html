@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Booking — Pet Care Assistant</title>
 <style>
-  /* ---- Warm coral/orange theme (no blue) ---- */
+ 
   :root{
-    --bg: #fff6f2;            /* soft warm background */
+    --bg: #fff6f2;            
     --panel: #ffffff;
-    --accent: #ff6b35;        /* coral */
-    --accent-2: #ffb86b;      /* warm gold */
+    --accent: #ff6b35;        
+    --accent-2: #ffb86b;      
     --muted: #6a6b6b;
     --radius: 12px;
     --shadow-soft: 0 8px 20px rgba(40,20,10,0.06);
@@ -26,10 +23,10 @@
     -webkit-font-smoothing:antialiased;
   }
 
-  /* header — slightly bigger */
+ 
   header{
     background: linear-gradient(90deg,#b0412a,#ff6b35);
-    padding: 34px 18px;                 /* larger */
+    padding: 34px 18px;                
     box-shadow: var(--shadow-deep);
     position: sticky;
     top:0;
@@ -46,10 +43,10 @@
   }
   header nav a.active{ background: rgba(255,255,255,0.12) }
 
-  /* page container */
+ 
   .wrap{ max-width:1000px; margin:20px auto; padding: 12px; }
 
-  /* main card */
+  
   .card{
     background: var(--panel);
     border-radius: var(--radius);
@@ -58,7 +55,7 @@
     border: 1px solid rgba(40,20,10,0.04);
   }
 
-  /* grid: left saved items, right controls */
+  
   .grid{
     display:grid;
     grid-template-columns: 360px 1fr;
@@ -95,7 +92,6 @@
   }
   .small-btn:hover{ background: rgba(255,107,53,0.06); color:#3b2016; transform:translateY(-2px) }
 
-  /* right controls */
   .controls { padding:12px; border-radius:10px; background: #fffaf7; border:1px solid rgba(40,20,10,0.03) }
   .controls label{ display:block; font-weight:800; margin-bottom:6px; color:var(--accent) }
   .controls select, .controls input[type="text"], .controls input[type="tel"]{
@@ -117,7 +113,6 @@
 
   footer { margin-top:18px; text-align:center; color:var(--muted); font-size:13px }
 
-  /* responsive */
   @media (max-width:900px){
     .grid{ grid-template-columns: 1fr; }
     header h1{ font-size:24px; padding-left:6px }
@@ -126,7 +121,6 @@
 </head>
 <body>
 
-  <!-- header kept like old pages (larger) -->
   <header>
     <div class="inner">
       <h1>Personalized Pet Care</h1>
@@ -146,7 +140,6 @@
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <div>
           <div style="font-weight:900; font-size:18px; color:#3b2016">Booking Center</div>
-          <!-- content below heading removed as requested -->
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           <button id="btnClearAll" class="small-btn">Clear Saved Items</button>
@@ -155,7 +148,6 @@
       </div>
 
       <div class="grid">
-        <!-- LEFT: saved items -->
         <section class="saved">
           <h2>Saved Services</h2>
           <div class="note">These come from Book actions on Grooming / Nutrition pages.</div>
@@ -170,7 +162,6 @@
           </div>
         </section>
 
-        <!-- RIGHT: location, day, submit -->
         <aside class="controls">
           <label>Select Location</label>
           <select id="locationSelect">
@@ -182,7 +173,6 @@
 
           <label>Choose Day</label>
           <div class="pill-row" id="dayRow" style="margin-bottom:6px">
-            <!-- day pills populated by JS -->
           </div>
 
           <div style="display:flex;gap:12px;margin-top:10px;align-items:center">
@@ -210,17 +200,10 @@
   </main>
 
 <script>
-/* -------------------------
-   Booking.html logic (append-fix for pendingBooking)
-   ------------------------- */
 
-/* helpers */
 const $ = id => document.getElementById(id);
 const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
-/* Merge single pendingBooking into pendingBookings array (append) then remove pendingBooking.
-   This guarantees each Book Slot press adds to the array instead of replacing previous items.
-*/
 function mergePendingBooking(){
   try{
     const singleRaw = localStorage.getItem('pendingBooking');
@@ -233,7 +216,6 @@ function mergePendingBooking(){
       return;
     }
 
-    // read existing array
     let arr = [];
     try {
       const arrRaw = localStorage.getItem('pendingBookings');
@@ -243,19 +225,16 @@ function mergePendingBooking(){
       }
     } catch(e){ arr = []; }
 
-    // append with timestamp (so dedupe won't drop newer items)
     const toPush = Object.assign({}, single, { timestamp: new Date().toISOString() });
     arr.push(toPush);
 
-    // save back and remove single key
     localStorage.setItem('pendingBookings', JSON.stringify(arr));
     localStorage.removeItem('pendingBooking');
   }catch(e){
     console.warn('mergePendingBooking failed', e);
   }
 }
-
-/* Read pending items (supports pendingBooking and pendingBookings) */
+  
 function readPendingItems(){
   const list = [];
   try{
@@ -269,8 +248,7 @@ function readPendingItems(){
       }
     }
   }catch(e){ console.warn('pendingBookings parse err', e); }
-  // If for some reason a pendingBooking still exists (should be merged on load),
-  // include it too — this is fallback only.
+  
   try{
     const raw = localStorage.getItem('pendingBooking');
     if(raw){
@@ -281,18 +259,16 @@ function readPendingItems(){
     }
   }catch(e){ /* ignore */ }
 
-  // Deduplicate but preserve order (first-in first shown). Dedupe by unique key
   const dedup = [];
   const seen = new Set();
   list.forEach(it=>{
-    // build a stable key; prefer timestamp if present (ensures multiple identical services at different times are kept)
+  
     const key = (it.timestamp || '') + '||' + (it.service||'') + '||' + (it.sub||'');
     if(!seen.has(key)){
       seen.add(key);
       dedup.push(it);
     } else {
-      // if timestamp is absent, create a fallback unique key using JSON to preserve duplicates:
-      const fallbackKey = JSON.stringify(it);
+     
       if(!seen.has(fallbackKey)){
         seen.add(fallbackKey);
         dedup.push(it);
@@ -302,13 +278,11 @@ function readPendingItems(){
   return dedup;
 }
 
-/* clear pending items */
 function clearPending(){
   localStorage.removeItem('pendingBookings');
   localStorage.removeItem('pendingBooking');
 }
-
-/* load locations from localStorage.petLocations or fallback list */
+  
 function loadLocations(){
   const sel = $('locationSelect');
   sel.innerHTML='';
@@ -337,7 +311,6 @@ function loadLocations(){
   });
 }
 
-/* create day pills */
 function buildDayPills(){
   const row = $('dayRow');
   row.innerHTML = '';
@@ -356,7 +329,6 @@ function buildDayPills(){
   });
 }
 
-/* render saved items */
 function renderItems(){
   const itemsList = $('itemsList');
   itemsList.innerHTML = '';
@@ -385,16 +357,13 @@ function renderItems(){
     itemsList.appendChild(el);
   });
 
-  // wire remove buttons
   itemsList.querySelectorAll('.small-btn').forEach(btn => {
     btn.onclick = ()=>{
       const idx = Number(btn.dataset.idx);
       const arr = readPendingItems();
       arr.splice(idx,1);
-      // save back the array to localStorage.pendingBookings (overwrite)
       try{
         localStorage.setItem('pendingBookings', JSON.stringify(arr));
-        // also remove pendingBooking fallback if array empty
         if(arr.length===0) localStorage.removeItem('pendingBooking');
       }catch(e){
         console.warn('Could not update pendingBookings', e);
@@ -404,15 +373,12 @@ function renderItems(){
   });
 }
 
-/* random helpers */
 function randOf(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function randomTime(){
   const hour = Math.floor(Math.random() * (19 - 10 + 1)) + 10; // 10..19
   const mins = Math.random() < 0.5 ? '00' : '30';
   return (hour<10? '0'+hour : ''+hour) + ':' + (hour===19 ? '00' : mins);
 }
-
-/* submit booking */
 function submitBooking(){
   const items = readPendingItems();
   if(items.length === 0){
@@ -467,7 +433,6 @@ function submitBooking(){
   renderItems();
 }
 
-/* display confirmation */
 function displayResults(bookings){
   const box = $('results');
   box.innerHTML = '';
@@ -491,11 +456,9 @@ function displayResults(bookings){
   });
 }
 
-/* helpers */
 function setError(txt){ $('errorBox').textContent = txt || ''; }
 function clearError(){ $('errorBox').textContent = ''; }
 
-/* enable/disable submit */
 function updateState(){
   const items = readPendingItems();
   const chosenLoc = $('locationSelect').value;
@@ -507,7 +470,6 @@ function updateState(){
   } else { btn.disabled = true; btn.classList.add('btn-disabled'); }
 }
 
-/* events */
 $('btnRefresh').addEventListener('click', ()=>{ renderAll(); });
 $('btnClearAll').addEventListener('click', ()=>{ clearPending(); renderItems(); updateState(); });
 $('btnSubmit').addEventListener('click', submitBooking);
@@ -515,7 +477,6 @@ $('locationSelect').addEventListener('change', updateState);
 $('contactName').addEventListener('input', ()=>{}); // kept for future use
 $('contactPhone').addEventListener('input', ()=>{}); // kept for future use
 
-/* render helpers */
 function renderAll(){
   loadLocations();
   buildDayPills();
@@ -523,10 +484,9 @@ function renderAll(){
   updateState();
 }
 
-/* onLoad: merge any single pendingBooking into pendingBookings (append), then render */
 (function onLoad(){
   try{
-    mergePendingBooking(); // <<-- important: append single into array
+    mergePendingBooking();
   }catch(e){ console.warn(e); }
   renderAll();
 })();
